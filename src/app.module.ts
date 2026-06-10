@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { FirebaseModule } from './firebase/firebase.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { WalletsModule } from './modules/wallets/wallets.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
     FirebaseModule,
     AuthModule,
     CategoriesModule,
+    WalletsModule,
   ],
   controllers: [],
   providers: [],
