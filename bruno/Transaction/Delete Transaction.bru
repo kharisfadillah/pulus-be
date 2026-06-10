@@ -1,0 +1,13 @@
+meta {
+  name: Delete Transaction
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/transactions/TRANSACTION_ID_HERE
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

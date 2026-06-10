@@ -1,0 +1,20 @@
+meta {
+  name: Update Transaction
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/transactions/TRANSACTION_ID_HERE
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "description": "Updated freelance payment",
+    "amount": 550000
+  }
+}
