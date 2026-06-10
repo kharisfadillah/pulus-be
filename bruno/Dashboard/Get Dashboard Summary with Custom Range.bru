@@ -1,0 +1,13 @@
+meta {
+  name: Get Dashboard Summary with Custom Range
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/dashboard?startDate=2026-06-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.000Z
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
