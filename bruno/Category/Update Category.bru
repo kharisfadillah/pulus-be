@@ -1,0 +1,20 @@
+meta {
+  name: Update Category
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/categories/CATEGORY_ID_HERE
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "Monthly Salary",
+    "color": "#2E7D32"
+  }
+}
