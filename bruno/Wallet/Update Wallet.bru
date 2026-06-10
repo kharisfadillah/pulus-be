@@ -1,0 +1,20 @@
+meta {
+  name: Update Wallet
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/wallets/WALLET_ID_HERE
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "Savings Wallet",
+    "balance": 150000
+  }
+}
