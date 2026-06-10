@@ -1,0 +1,25 @@
+meta {
+  name: Create Transaction (Transfer)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/transactions
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "date": "2026-06-10T14:00:00.000Z",
+    "description": "Transfer to savings wallet",
+    "categoryId": "CATEGORY_ID_HERE",
+    "type": "TRANSFER",
+    "fromWalletId": "SOURCE_WALLET_ID_HERE",
+    "toWalletId": "TARGET_WALLET_ID_HERE",
+    "amount": 200000
+  }
+}
