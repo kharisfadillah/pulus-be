@@ -1,0 +1,13 @@
+meta {
+  name: List Categories
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/categories
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
