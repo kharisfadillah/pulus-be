@@ -16,10 +16,9 @@ export class CategoriesService {
     });
   }
 
-  async findAll(userId: string) {
+  async findAll() {
     return this.prisma.category.findMany({
       where: {
-        createdBy: userId,
         deletedAt: null,
       },
       orderBy: {
@@ -28,11 +27,10 @@ export class CategoriesService {
     });
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string) {
     const category = await this.prisma.category.findFirst({
       where: {
         id,
-        createdBy: userId,
         deletedAt: null,
       },
     });
@@ -49,9 +47,6 @@ export class CategoriesService {
     updateCategoryDto: UpdateCategoryDto,
     userId: string,
   ) {
-    // Ensure ownership first
-    await this.findOne(id, userId);
-
     return this.prisma.category.update({
       where: { id },
       data: {
@@ -62,9 +57,6 @@ export class CategoriesService {
   }
 
   async remove(id: string, userId: string) {
-    // Ensure ownership first
-    await this.findOne(id, userId);
-
     return this.prisma.category.update({
       where: { id },
       data: {

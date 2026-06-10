@@ -28,13 +28,13 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@GetUser('id') userId: string) {
-    return this.categoriesService.findAll(userId);
+  findAll() {
+    return this.categoriesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @GetUser('id') userId: string) {
-    return this.categoriesService.findOne(id, userId);
+  findOne(@Param('id') id: string) {
+    return this.categoriesService.findOne(id);
   }
 
   @Patch(':id')
