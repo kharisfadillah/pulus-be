@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
-import { FirebaseService } from '../firebase/firebase.service';
+import { PrismaService } from '../../database/prisma.service';
+import { FirebaseService } from '../../firebase/firebase.service';
 
 @Injectable()
 export class AuthService {
