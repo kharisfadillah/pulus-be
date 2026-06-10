@@ -12,24 +12,25 @@ export class AuthService {
   async authenticate(idToken: string) {
     try {
       const decodedToken = await this.firebaseService.verifyToken(idToken);
-      const { uid, email, name } = decodedToken;
+      const { uid, email } = decodedToken;
 
       if (!email) {
-        throw new UnauthorizedException('Email is required in Firebase ID Token');
+        throw new UnauthorizedException(
+          'Email is required in Firebase ID Token',
+        );
       }
 
       // Check if user exists by firebaseUid or email
       let user = await this.prisma.user.findFirst({
         where: {
-          OR: [
-            { firebaseUid: uid },
-            { email: email },
-          ],
+          OR: [{ firebaseUid: uid }, { email: email }],
         },
       });
 
       if (!user) {
-        throw new UnauthorizedException('User is not registered in the system.');
+        throw new UnauthorizedException(
+          'User is not registered in the system.',
+        );
       }
 
       if (!user.firebaseUid) {
@@ -42,7 +43,9 @@ export class AuthService {
 
       return user;
     } catch (error) {
-      throw new UnauthorizedException(error.message || 'Authentication failed');
+      const message =
+        error instanceof Error ? error.message : 'Authentication failed';
+      throw new UnauthorizedException(message);
     }
   }
 }
