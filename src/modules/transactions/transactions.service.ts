@@ -171,6 +171,36 @@ export class TransactionsService {
     });
   }
 
+  async getStats(type?: string, search?: string) {
+    const whereClause: any = { deletedAt: null };
+
+    if (type && Object.values(TransType).includes(type as any)) {
+      whereClause.type = type as TransType;
+    }
+
+    if (search) {
+      whereClause.description = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+
+    const incomeSum = await this.prisma.transaction.aggregate({
+      where: { ...whereClause, type: TransType.INCOME },
+      _sum: { amount: true },
+    });
+
+    const expenseSum = await this.prisma.transaction.aggregate({
+      where: { ...whereClause, type: TransType.EXPENSE },
+      _sum: { amount: true },
+    });
+
+    return {
+      incomeTotal: incomeSum._sum.amount || 0,
+      expenseTotal: expenseSum._sum.amount || 0,
+    };
+  }
+
   async findOne(id: string) {
     const transaction = await this.prisma.transaction.findFirst({
       where: { id, deletedAt: null },

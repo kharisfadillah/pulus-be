@@ -40,6 +40,14 @@ export class TransactionsController {
     return this.transactionsService.findAll(limitNum, offsetNum, type, search);
   }
 
+  @Get('stats')
+  getStats(
+    @Query('type') type?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.transactionsService.getStats(type, search);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.transactionsService.findOne(id);
