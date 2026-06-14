@@ -144,10 +144,25 @@ export class TransactionsService {
     });
   }
 
-  async findAll() {
+  async findAll(limit?: number, offset?: number, type?: string, search?: string) {
+    const whereClause: any = { deletedAt: null };
+
+    if (type && Object.values(TransType).includes(type as any)) {
+      whereClause.type = type as TransType;
+    }
+
+    if (search) {
+      whereClause.description = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+
     return this.prisma.transaction.findMany({
-      where: { deletedAt: null },
+      where: whereClause,
       orderBy: { date: 'desc' },
+      take: limit,
+      skip: offset,
       include: {
         category: true,
         fromWallet: true,
