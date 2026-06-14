@@ -8,6 +8,15 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransType } from 'generated/prisma/client';
 
+const formatRupiah = (value: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
 @Injectable()
 export class TransactionsService {
   constructor(private prisma: PrismaService) {}
@@ -35,6 +44,17 @@ export class TransactionsService {
     if (!fromWallet) {
       throw new NotFoundException(
         `Wallet with ID "${createTransactionDto.fromWalletId}" not found.`,
+      );
+    }
+
+    // Check for sufficient balance for EXPENSE and TRANSFER
+    if (
+      (createTransactionDto.type === TransType.EXPENSE ||
+        createTransactionDto.type === TransType.TRANSFER) &&
+      fromWallet.balance < createTransactionDto.amount
+    ) {
+      throw new BadRequestException(
+        `Insufficient balance in wallet "${fromWallet.name}". Current balance: ${formatRupiah(fromWallet.balance)}, required: ${formatRupiah(createTransactionDto.amount)}.`,
       );
     }
 
@@ -321,6 +341,18 @@ export class TransactionsService {
           where: { id: mut.walletId },
           data: { balance: { decrement: mut.amount } },
         });
+      }
+
+      // Check if the source wallet has sufficient balance now (after revert)
+      if (targetType === TransType.EXPENSE || targetType === TransType.TRANSFER) {
+        const sourceWallet = await tx.wallet.findFirst({
+          where: { id: targetFromWalletId },
+        });
+        if (!sourceWallet || sourceWallet.balance < targetAmount) {
+          throw new BadRequestException(
+            `Insufficient balance in wallet "${sourceWallet?.name || 'Unknown'}". Current balance (after reverting previous state): ${formatRupiah(sourceWallet?.balance || 0)}, required: ${formatRupiah(targetAmount)}.`,
+          );
+        }
       }
 
       // Hard-delete old mutations

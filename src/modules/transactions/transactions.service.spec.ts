@@ -244,6 +244,37 @@ describe('TransactionsService', () => {
       );
     });
 
+    it('should throw BadRequestException if fromWallet balance is insufficient for EXPENSE transaction', async () => {
+      const dto = {
+        date: '2026-06-10T12:00:00.000Z',
+        description: 'Dinner',
+        categoryId: 'cat-expense',
+        type: TransType.EXPENSE,
+        fromWalletId: 'wallet-1',
+        amount: 150000,
+      };
+
+      mockPrismaService.category.findFirst.mockResolvedValue({
+        id: 'cat-expense',
+        type: TransType.EXPENSE,
+      });
+      mockPrismaService.wallet.findFirst.mockResolvedValue({
+        id: 'wallet-1',
+        name: 'Cash',
+        balance: 100000,
+      });
+
+      try {
+        await service.create(dto, 'user-1');
+        fail('should have thrown BadRequestException');
+      } catch (err: any) {
+        expect(err).toBeInstanceOf(BadRequestException);
+        expect(err.message).toContain('Insufficient balance in wallet "Cash"');
+        expect(err.message).toContain('Current balance:');
+        expect(err.message).toContain('required:');
+      }
+    });
+
     it('should throw BadRequestException if toWalletId is missing in TRANSFER transaction', async () => {
       const dto = {
         date: '2026-06-10T12:00:00.000Z',
@@ -445,6 +476,42 @@ describe('TransactionsService', () => {
       await expect(service.update('tx-invalid', {}, 'user-1')).rejects.toThrow(
         new NotFoundException('Transaction with ID "tx-invalid" not found.'),
       );
+    });
+
+    it('should throw BadRequestException if target wallet balance is insufficient for updated EXPENSE transaction', async () => {
+      const currentTx = {
+        id: 'tx-1',
+        date: new Date('2026-06-10T12:00:00.000Z'),
+        description: 'Dinner',
+        categoryId: 'cat-expense',
+        type: TransType.EXPENSE,
+        fromWalletId: 'wallet-1',
+        amount: 50000,
+        mutations: [{ id: 'mut-1', walletId: 'wallet-1', amount: -50000 }],
+      };
+
+      const dto = {
+        amount: 200000,
+      };
+
+      mockPrismaService.transaction.findFirst.mockResolvedValue(currentTx);
+      mockPrismaService.category.findFirst.mockResolvedValue({
+        id: 'cat-expense',
+        type: TransType.EXPENSE,
+      });
+      mockPrismaService.wallet.findFirst.mockResolvedValue({
+        id: 'wallet-1',
+        name: 'Cash',
+        balance: 100000,
+      });
+
+      try {
+        await service.update('tx-1', dto, 'user-1');
+        fail('should have thrown BadRequestException');
+      } catch (err: any) {
+        expect(err).toBeInstanceOf(BadRequestException);
+        expect(err.message).toContain('Insufficient balance in wallet "Cash"');
+      }
     });
   });
 
