@@ -7,6 +7,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { WalletsModule } from './modules/wallets/wallets.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { MutationsModule } from './modules/mutations/mutations.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     WalletsModule,
     TransactionsModule,
     DashboardModule,
+    MutationsModule,
   ],
   controllers: [],
   providers: [],

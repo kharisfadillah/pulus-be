@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
@@ -24,6 +28,14 @@ export class WalletsService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        _count: {
+          select: {
+            fromTransactions: true,
+            toTransactions: true,
+          },
+        },
+      },
     });
   }
 
@@ -42,8 +54,29 @@ export class WalletsService {
     return wallet;
   }
 
+  async checkHasTransactions(id: string) {
+    const count = await this.prisma.transaction.count({
+      where: {
+        deletedAt: null,
+        OR: [{ fromWalletId: id }, { toWalletId: id }],
+      },
+    });
+    return count > 0;
+  }
+
   async update(id: string, updateWalletDto: UpdateWalletDto, userId: string) {
-    await this.findOne(id);
+    const existing = await this.findOne(id);
+
+    const hasTxs = await this.checkHasTransactions(id);
+    if (
+      hasTxs &&
+      updateWalletDto.balance !== undefined &&
+      updateWalletDto.balance !== existing.balance
+    ) {
+      throw new BadRequestException(
+        'Cannot update wallet balance when it has transactions.',
+      );
+    }
 
     return this.prisma.wallet.update({
       where: { id },
@@ -56,6 +89,13 @@ export class WalletsService {
 
   async remove(id: string, userId: string) {
     await this.findOne(id);
+
+    const hasTxs = await this.checkHasTransactions(id);
+    if (hasTxs) {
+      throw new BadRequestException(
+        'Cannot delete wallet that has transactions.',
+      );
+    }
 
     return this.prisma.wallet.update({
       where: { id },

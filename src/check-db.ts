@@ -13,9 +13,15 @@ async function main() {
 
   try {
     const users = await prisma.user.findMany({});
-    const wallets = await prisma.wallet.findMany({ where: { deletedAt: null } });
-    const categories = await prisma.category.findMany({ where: { deletedAt: null } });
-    const transactions = await prisma.transaction.findMany({ where: { deletedAt: null } });
+    const wallets = await prisma.wallet.findMany({
+      where: { deletedAt: null },
+    });
+    const categories = await prisma.category.findMany({
+      where: { deletedAt: null },
+    });
+    const transactions = await prisma.transaction.findMany({
+      where: { deletedAt: null },
+    });
     console.log('DATA_CHECK_START');
     console.log('Users:', JSON.stringify(users));
     console.log('Wallets:', JSON.stringify(wallets));

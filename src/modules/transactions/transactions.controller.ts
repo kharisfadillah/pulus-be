@@ -41,10 +41,7 @@ export class TransactionsController {
   }
 
   @Get('stats')
-  getStats(
-    @Query('type') type?: string,
-    @Query('search') search?: string,
-  ) {
+  getStats(@Query('type') type?: string, @Query('search') search?: string) {
     return this.transactionsService.getStats(type, search);
   }
 
