@@ -270,7 +270,15 @@ async function main() {
 
     // 3. Create transactions and mutations sequentially
     for (const txData of transactionsToSeed) {
-      const { date, description, categoryId, type, fromWalletId, toWalletId, amount } = txData;
+      const {
+        date,
+        description,
+        categoryId,
+        type,
+        fromWalletId,
+        toWalletId,
+        amount,
+      } = txData;
 
       // Create transaction
       const transaction = await prisma.transaction.create({
@@ -335,20 +343,22 @@ async function main() {
         await prisma.mutation.create({
           data: {
             transactionId: transaction.id,
-            walletId: toWalletId!,
+            walletId: toWalletId,
             amount,
             createdBy: userId,
           },
         });
 
         await prisma.wallet.update({
-          where: { id: toWalletId! },
+          where: { id: toWalletId },
           data: { balance: { increment: amount } },
         });
       }
     }
 
-    console.log(`Successfully seeded ${transactionsToSeed.length} transactions!`);
+    console.log(
+      `Successfully seeded ${transactionsToSeed.length} transactions!`,
+    );
 
     // Let's print final balances to verify
     const finalWallets = await prisma.wallet.findMany();
@@ -356,7 +366,6 @@ async function main() {
     finalWallets.forEach((w) => {
       console.log(`- ${w.name}: ${w.balance}`);
     });
-
   } catch (err) {
     console.error('Seeding failed:', err);
   } finally {

@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../../database/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { TransType } from 'generated/prisma/client';
+import { TransType, Prisma } from 'generated/prisma/client';
 
 const formatRupiah = (value: number) => {
   return new Intl.NumberFormat('id-ID', {
@@ -164,10 +164,15 @@ export class TransactionsService {
     });
   }
 
-  async findAll(limit?: number, offset?: number, type?: string, search?: string) {
-    const whereClause: any = { deletedAt: null };
+  async findAll(
+    limit?: number,
+    offset?: number,
+    type?: string,
+    search?: string,
+  ) {
+    const whereClause: Prisma.TransactionWhereInput = { deletedAt: null };
 
-    if (type && Object.values(TransType).includes(type as any)) {
+    if (type && Object.values(TransType).includes(type as TransType)) {
       whereClause.type = type as TransType;
     }
 
@@ -192,9 +197,9 @@ export class TransactionsService {
   }
 
   async getStats(type?: string, search?: string) {
-    const whereClause: any = { deletedAt: null };
+    const whereClause: Prisma.TransactionWhereInput = { deletedAt: null };
 
-    if (type && Object.values(TransType).includes(type as any)) {
+    if (type && Object.values(TransType).includes(type as TransType)) {
       whereClause.type = type as TransType;
     }
 
@@ -344,7 +349,10 @@ export class TransactionsService {
       }
 
       // Check if the source wallet has sufficient balance now (after revert)
-      if (targetType === TransType.EXPENSE || targetType === TransType.TRANSFER) {
+      if (
+        targetType === TransType.EXPENSE ||
+        targetType === TransType.TRANSFER
+      ) {
         const sourceWallet = await tx.wallet.findFirst({
           where: { id: targetFromWalletId },
         });
