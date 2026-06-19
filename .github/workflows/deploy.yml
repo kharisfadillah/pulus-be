@@ -40,7 +40,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           source: "dist/,package.json,pnpm-lock.yaml,prisma/"
-          target: "/var/www/catatduit/be"
+          target: "/var/www/pulus/be"
           rm: false
 
       - name: Install production dependencies, migrate, and restart backend
@@ -51,8 +51,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
-            cd /var/www/catatduit/be
+            cd /var/www/pulus/be
             corepack enable
             pnpm install --prod --frozen-lockfile
             npx prisma migrate deploy
-            pm2 restart catatduit-backend || pm2 start dist/src/main.js --name "catatduit-backend"
+            pm2 restart pulus-backend || pm2 start dist/src/main.js --name "pulus-backend"
