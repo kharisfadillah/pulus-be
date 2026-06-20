@@ -79,5 +79,14 @@
       "^generated/(.*)\\.js$": "<rootDir>/../generated/$1",
       "^generated/(.*)$": "<rootDir>/../generated/$1"
     }
+  },
+  "pnpm": {
+    "onlyAllowedBuilds": [
+      "@firebase/util",
+      "@prisma/engines",
+      "prisma",
+      "protobufjs",
+      "unrs-resolver"
+    ]
   }
 }
