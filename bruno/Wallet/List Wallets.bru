@@ -1,0 +1,13 @@
+meta {
+  name: List Wallets
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/wallets
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

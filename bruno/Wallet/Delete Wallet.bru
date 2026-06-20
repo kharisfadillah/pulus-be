@@ -1,0 +1,13 @@
+meta {
+  name: Delete Wallet
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/wallets/WALLET_ID_HERE
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
