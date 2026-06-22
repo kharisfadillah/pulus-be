@@ -96,6 +96,7 @@ export class TransactionsService {
               ? createTransactionDto.toWalletId
               : null,
           amount: createTransactionDto.amount,
+          isCreatedByAi: createTransactionDto.isCreatedByAi || false,
           createdBy: userId,
         },
       });

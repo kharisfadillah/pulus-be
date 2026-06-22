@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 import { TransType } from 'generated/prisma/client';
 
 export class CreateCategoryDto {
@@ -16,4 +16,7 @@ export class CreateCategoryDto {
   @IsString()
   @IsNotEmpty()
   color: string;
+
+  @IsOptional()
+  isCreatedByAi?: boolean;
 }

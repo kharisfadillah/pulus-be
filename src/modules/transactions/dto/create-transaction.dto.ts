@@ -37,4 +37,7 @@ export class CreateTransactionDto {
   @IsNumber()
   @Min(0.01)
   amount: number;
+
+  @IsOptional()
+  isCreatedByAi?: boolean;
 }
