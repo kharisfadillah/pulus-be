@@ -105,7 +105,8 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
         const res = await this.aiService.sendMessage(text, user.id);
 
         // Send explanation reply
-        await ctx.reply(res.explanation);
+        const formattedReply = this.formatMessage(res.explanation);
+        await ctx.reply(formattedReply, { parse_mode: 'HTML' });
       } catch (err) {
         console.error('Error processing Telegram message:', err);
         await ctx.reply(
@@ -129,6 +130,30 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     if (this.bot) {
       this.bot.stop();
     }
+  }
+
+  // Helper to convert standard markdown to Telegram-compatible HTML
+  private formatMessage(text: string): string {
+    if (!text) return '';
+    // 1. Escape HTML special characters
+    let html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // 2. Convert headers (e.g. ### Header or ## Header) to bold
+    html = html.replace(/^(#{1,6})\s+(.+)$/gm, '<b>$2</b>');
+
+    // 3. Convert **bold** to <b>bold</b>
+    html = html.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+    // 4. Convert * bullet points at the start of a line to standard bullet points
+    html = html.replace(/^[\*\-]\s+/gm, '• ');
+
+    // 5. Convert `inline code` to <code>inline code</code>
+    html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+
+    return html;
   }
 
   // Generate a pairing token for web UI
