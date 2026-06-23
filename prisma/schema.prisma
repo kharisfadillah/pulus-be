@@ -31,6 +31,9 @@ model User {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
+  telegramChatId String? @unique @map("telegram_chat_id")
+  telegramPairingToken String? @unique @map("telegram_pairing_token")
+  telegramPairingExpires DateTime? @map("telegram_pairing_expires")
 
   @@map("users")
 }
@@ -42,6 +45,7 @@ model Category {
   icon         String
   color        String
   transactions Transaction[]
+  isCreatedByAi Boolean      @default(false) @map("is_created_by_ai")
   createdBy    String?       @map("created_by")
   updatedBy    String?       @map("updated_by")
   deletedBy    String?       @map("deleted_by")
@@ -60,6 +64,7 @@ model Wallet {
   balance          Float
   fromTransactions Transaction[] @relation("FromWallet")
   toTransactions   Transaction[] @relation("ToWallet")
+  isCreatedByAi    Boolean       @default(false) @map("is_created_by_ai")
   createdBy        String?       @map("created_by")
   updatedBy        String?       @map("updated_by")
   deletedBy        String?       @map("deleted_by")
@@ -84,6 +89,7 @@ model Transaction {
   toWallet     Wallet?    @relation("ToWallet", fields: [toWalletId], references: [id])
   amount       Float
   mutations    Mutation[]
+  isCreatedByAi Boolean    @default(false) @map("is_created_by_ai")
   createdBy    String?    @map("created_by")
   updatedBy    String?    @map("updated_by")
   deletedBy    String?    @map("deleted_by")
@@ -110,3 +116,16 @@ model Mutation {
 
   @@map("mutations")
 }
+
+model AiChatMessage {
+  id            String   @id @default(ulid())
+  userId        String   @map("user_id")
+  role          String   // 'user' atau 'model'
+  message       String   @db.Text
+  actionType    String?  @map("action_type") // 'CREATE_TRANSACTION', 'CREATE_CATEGORY', 'CREATE_WALLET', 'GENERAL_CHAT'
+  referenceId   String?  @map("reference_id") // ID objek yang berhasil dibuat (transaksi/kategori/dompet)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("ai_chat_messages")
+}
+

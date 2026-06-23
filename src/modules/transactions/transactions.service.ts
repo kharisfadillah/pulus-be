@@ -22,6 +22,25 @@ export class TransactionsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createTransactionDto: CreateTransactionDto, userId: string) {
+    // Validate date is not in the future
+    const txDate = new Date(createTransactionDto.date);
+    const today = new Date();
+    const txDateOnly = new Date(
+      txDate.getFullYear(),
+      txDate.getMonth(),
+      txDate.getDate(),
+    );
+    const todayOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    if (txDateOnly > todayOnly) {
+      throw new BadRequestException(
+        'Tanggal transaksi tidak boleh di masa depan (maksimal hari ini).',
+      );
+    }
+
     // 1. Validate Category
     const category = await this.prisma.category.findFirst({
       where: { id: createTransactionDto.categoryId, deletedAt: null },
@@ -96,6 +115,7 @@ export class TransactionsService {
               ? createTransactionDto.toWalletId
               : null,
           amount: createTransactionDto.amount,
+          isCreatedByAi: createTransactionDto.isCreatedByAi || false,
           createdBy: userId,
         },
       });
@@ -261,6 +281,25 @@ export class TransactionsService {
       updateTransactionDto.date !== undefined
         ? updateTransactionDto.date
         : currentTx.date.toISOString();
+
+    // Validate target date is not in the future
+    const txDate = new Date(targetDate);
+    const today = new Date();
+    const txDateOnly = new Date(
+      txDate.getFullYear(),
+      txDate.getMonth(),
+      txDate.getDate(),
+    );
+    const todayOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    if (txDateOnly > todayOnly) {
+      throw new BadRequestException(
+        'Tanggal transaksi tidak boleh di masa depan (maksimal hari ini).',
+      );
+    }
     const targetDescription =
       updateTransactionDto.description !== undefined
         ? updateTransactionDto.description

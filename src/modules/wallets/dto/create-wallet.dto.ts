@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Min,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateWalletDto {
   @IsString()
@@ -16,4 +22,7 @@ export class CreateWalletDto {
   @IsNumber()
   @Min(0)
   balance: number;
+
+  @IsOptional()
+  isCreatedByAi?: boolean;
 }

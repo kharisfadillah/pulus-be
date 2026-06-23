@@ -8,6 +8,8 @@ import { WalletsModule } from './modules/wallets/wallets.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { MutationsModule } from './modules/mutations/mutations.module';
+import { AiModule } from './modules/ai/ai.module';
+import { TelegramModule } from './modules/telegram/telegram.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { MutationsModule } from './modules/mutations/mutations.module';
     TransactionsModule,
     DashboardModule,
     MutationsModule,
+    AiModule,
+    TelegramModule,
   ],
   controllers: [],
   providers: [],
