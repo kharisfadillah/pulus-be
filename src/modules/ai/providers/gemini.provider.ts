@@ -37,8 +37,10 @@ export class GeminiProvider implements AiProvider {
       };
     },
   ): Promise<AiParseResult> {
+    const modelName =
+      this.configService.get<string>('GEMINI_MODEL') || 'gemini-2.5-flash';
     const model = this.genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: modelName,
       generationConfig: {
         responseMimeType: 'application/json',
       },
